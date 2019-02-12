@@ -61,7 +61,7 @@ int main(int _argc, char** _argv){
     planner.targetPoint({maxPt.x, maxPt.y, maxPt.z});
 
     // planner.enableDebugVisualization(viz.rawViewer());
-    planner.iterations(10000);
+    planner.iterations(20000);
     planner.dimensions( minPt.x, minPt.y, minPt.z,
                         maxPt.x, maxPt.y, /*maxPt.z*/ 5);
 
