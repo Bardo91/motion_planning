@@ -25,43 +25,73 @@
 #include <motion_planning/planners/rrtstar.h>
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/common/common.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include <thread>
 #include <chrono>
 
 int main(int _argc, char** _argv){    
-    mp::Visualizer viz;
-/*
+    // Load cloud
     pcl::PointCloud<pcl::PointXYZ> cloud;
     if (pcl::io::loadPCDFile<pcl::PointXYZ> (_argv[1], cloud) == -1) {
         PCL_ERROR ("Couldn't read file test_pcd.pcd \n");
         return (-1);
     }
 
-    viz.draw<pcl::PointXYZ>(cloud);
-*/
+    // Filter cloud
+    pcl::VoxelGrid<pcl::PointXYZ> sor;
+    sor.setInputCloud (cloud.makeShared());
+    sor.setLeafSize (0.2f, 0.2f, 0.2f);
+    sor.filter(cloud);
 
+    // Draw cloud
+    mp::Visualizer viz;
+    viz.draw<pcl::PointXYZ>(cloud);  
+    pcl::PointXYZ minPt, maxPt;
+    pcl::getMinMax3D (cloud, minPt, maxPt);
+
+    // Config planner
     mp::RRTStar planner;
-
-    planner.initPoint({-0.5,-0.5,-0.5});
-    planner.targetPoint({1,1,1});
+    planner.initPoint({minPt.x, minPt.y, minPt.z});
+    planner.targetPoint({maxPt.x, maxPt.y, maxPt.z});
 
     planner.enableDebugVisualization(viz.rawViewer());
-    planner.iterations(1000);
-    // planner.dimensions(-5,-5,-5,5,5,5);
-    
-    Eigen::Vector3f sphereCentre = {0.3,0.3,0.3};
-    float radSphere = 0.5;
-    mp::Constraint c1 = [&](const Eigen::Vector3f & _old, const Eigen::Vector3f &_new){
-        return pow(_new[0] - sphereCentre[0], 2) + pow(_new[1] - sphereCentre[1], 2) + pow(_new[2] - sphereCentre[2], 2) - pow(radSphere,2) > 0;
+    planner.iterations(5000);
+    planner.dimensions( minPt.x, minPt.y, minPt.z,
+                        maxPt.x, maxPt.y, /*maxPt.z*/ 5);
+
+    // Add constraint
+    pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree(0.1);
+    octree.setInputCloud(cloud.makeShared());
+    octree.addPointsFromInputCloud();
+
+    float safeDist = 1.0;
+    mp::Constraint c1 = [&](const Eigen::Vector3f &_orig, const Eigen::Vector3f &_dest){
+        pcl::PointXYZ query(_dest[0], _dest[1], _dest[2]);
+        std::vector<int> index;
+        std::vector< float > dist;
+        octree.nearestKSearch(query, 1, index, dist);
+        
+        return dist[0] > safeDist;
     };
     planner.addConstraint(c1);
+    
+    Eigen::Vector3f sphereCentre = {    (minPt.x + maxPt.x)/2 ,
+                                        (minPt.y + maxPt.y)/2 ,
+                                        /*(minPt.z + maxPt.z)/2*/ 2.0 };
+    float radSphere = 10;
+    mp::Constraint c2 = [&](const Eigen::Vector3f & _old, const Eigen::Vector3f &_new){
+        return pow(_new[0] - sphereCentre[0], 2) + pow(_new[1] - sphereCentre[1], 2) + pow(_new[2] - sphereCentre[2], 2) - pow(radSphere,2) > 0;
+    };
+    planner.addConstraint(c2);
+    viz.drawSphere(sphereCentre, radSphere);
 
+    // Compute traj
     auto traj = planner.compute();
 
-    viz.drawSphere(sphereCentre, radSphere);
+    // Draw result.
     viz.draw(traj);
-
     for(;;){
         viz.rawViewer()->spinOnce(30);
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
