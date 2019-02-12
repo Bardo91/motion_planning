@@ -69,7 +69,7 @@ namespace mp{
 
     private:
         int iterations_ = 100;
-        float stepSize_ = 0.05;
+        float stepSize_ = 0.1;
         float neighborSearchDistance_ = 0.15;
         struct NodeInfo{
             int id_;

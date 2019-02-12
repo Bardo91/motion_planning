@@ -32,7 +32,7 @@ namespace mp{
                         minLimit_({-1,-1,-1}), 
                         maxLimit_({1,1,1}),
                         nodes_(new pcl::PointCloud<pcl::PointXYZ>) {
-
+        // srand((unsigned int) time(0));
     }
 
     //-----------------------------------------------------------------------------------------------------------------

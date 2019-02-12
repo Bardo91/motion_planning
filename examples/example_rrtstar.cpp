@@ -47,7 +47,7 @@ int main(int _argc, char** _argv){
     planner.targetPoint({1,1,1});
 
     planner.enableDebugVisualization(viz.rawViewer());
-    planner.iterations(2000);
+    planner.iterations(1000);
     // planner.dimensions(-5,-5,-5,5,5,5);
     
     Eigen::Vector3f sphereCentre = {0.3,0.3,0.3};
