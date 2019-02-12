@@ -30,6 +30,13 @@ namespace mp{
     /// Base class with general interface of planner
     class RRTStar: public Planner{
     public:
+        struct NodeInfo{
+            int id_;
+            int parent_;
+            float  cost_; // From id to parent
+        };
+
+    public:
         /// Basic constructor
         RRTStar();
 
@@ -57,6 +64,9 @@ namespace mp{
         /// Set dimensios for the sampler
         void dimensions(float _xmin, float _ymin, float _zmin, float _xmax, float _ymax, float _zmax);
 
+        /// Get tree info
+        void tree(pcl::PointCloud<pcl::PointXYZ>::Ptr &_nodes, std::vector<NodeInfo>& _nodesInfo);
+
     private:
         Eigen::Vector3f sampleFree();
         int nearest(const Eigen::Vector3f &_point);
@@ -71,11 +81,6 @@ namespace mp{
         int iterations_ = 100;
         float stepSize_ = 0.5;
         float neighborSearchDistance_ = 0.15;
-        struct NodeInfo{
-            int id_;
-            int parent_;
-            float  cost_; // From id to parent
-        };
 
         std::vector<NodeInfo> nodesInfo_;
         pcl::PointCloud<pcl::PointXYZ>::Ptr nodes_;

@@ -112,9 +112,9 @@ namespace mp{
                     }
                 }
 
-                //if(viewer_){
-                //    viewer_->spinOnce();
-                //}
+                if(viewer_){
+                    viewer_->spinOnce();
+                }
             }
         }
         
@@ -167,6 +167,12 @@ namespace mp{
     void RRTStar::dimensions(float _xmin, float _ymin, float _zmin, float _xmax, float _ymax, float _zmax){
         minLimit_ = {_xmin, _ymin, _zmin};
         maxLimit_ = {_xmax, _ymax, _zmax};
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    void RRTStar::tree(pcl::PointCloud<pcl::PointXYZ>::Ptr &_nodes, std::vector<NodeInfo>& _nodesInfo){
+        _nodes = nodes_;
+        _nodesInfo = nodesInfo_;
     }
 
     //-----------------------------------------------------------------------------------------------------------------

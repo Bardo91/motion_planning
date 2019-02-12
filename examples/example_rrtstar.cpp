@@ -32,43 +32,50 @@
 #include <chrono>
 
 int main(int _argc, char** _argv){    
+    std::cout << "Loading input cloud: ";
+    auto t0 = std::chrono::system_clock::now();
     // Load cloud
-    pcl::PointCloud<pcl::PointXYZ> cloud;
-    if (pcl::io::loadPCDFile<pcl::PointXYZ> (_argv[1], cloud) == -1) {
+    pcl::PointCloud<pcl::PointXYZRGB> cloud, filtered;
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (_argv[1], cloud) == -1) {
         PCL_ERROR ("Couldn't read file test_pcd.pcd \n");
         return (-1);
     }
 
     // Filter cloud
-    pcl::VoxelGrid<pcl::PointXYZ> sor;
+    pcl::VoxelGrid<pcl::PointXYZRGB> sor;
     sor.setInputCloud (cloud.makeShared());
     sor.setLeafSize (0.2f, 0.2f, 0.2f);
-    sor.filter(cloud);
+    sor.filter(filtered);
 
     // Draw cloud
     mp::Visualizer viz;
-    viz.draw<pcl::PointXYZ>(cloud);  
-    pcl::PointXYZ minPt, maxPt;
-    pcl::getMinMax3D (cloud, minPt, maxPt);
-
+    viz.draw<pcl::PointXYZRGB>(filtered);  
+    pcl::PointXYZRGB minPt, maxPt;
+    pcl::getMinMax3D (filtered, minPt, maxPt);
+    auto t1 = std::chrono::system_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count()/1000.0 << "s." << std::endl;
+    std::cout << "Configuring planner";
     // Config planner
     mp::RRTStar planner;
     planner.initPoint({minPt.x, minPt.y, minPt.z});
     planner.targetPoint({maxPt.x, maxPt.y, maxPt.z});
 
-    planner.enableDebugVisualization(viz.rawViewer());
-    planner.iterations(5000);
+    // planner.enableDebugVisualization(viz.rawViewer());
+    planner.iterations(10000);
     planner.dimensions( minPt.x, minPt.y, minPt.z,
                         maxPt.x, maxPt.y, /*maxPt.z*/ 5);
 
     // Add constraint
-    pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree(0.1);
-    octree.setInputCloud(cloud.makeShared());
+    pcl::octree::OctreePointCloudSearch<pcl::PointXYZRGB> octree(0.1);
+    octree.setInputCloud(filtered.makeShared());
     octree.addPointsFromInputCloud();
 
     float safeDist = 1.0;
     mp::Constraint c1 = [&](const Eigen::Vector3f &_orig, const Eigen::Vector3f &_dest){
-        pcl::PointXYZ query(_dest[0], _dest[1], _dest[2]);
+        pcl::PointXYZRGB query;
+        query.x = _dest[0];
+        query.y = _dest[1];
+        query.z = _dest[2];
         std::vector<int> index;
         std::vector< float > dist;
         octree.nearestKSearch(query, 1, index, dist);
@@ -86,12 +93,47 @@ int main(int _argc, char** _argv){
     };
     planner.addConstraint(c2);
     viz.drawSphere(sphereCentre, radSphere);
-
+    auto t2 = std::chrono::system_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()/1000.0 << "s." << std::endl;
+    std::cout << "Computing trajectory: ";
     // Compute traj
     auto traj = planner.compute();
+    auto t3 = std::chrono::system_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t3-t2).count()/1000.0 << "s." << std::endl;
+    std::cout << "Display results: ";
+    std::vector<mp::RRTStar::NodeInfo> nodesInfo;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr nodes;
+    planner.tree(nodes, nodesInfo);
+
+    vtkSmartPointer<vtkPolyData> treeBase;
+    viz.drawCustom([&](std::shared_ptr<pcl::visualization::PCLVisualizer> &_viewer){
+        // Create new graph
+        treeBase = vtkSmartPointer<vtkPolyData>::New();
+        treeBase->Allocate();
+        vtkSmartPointer<vtkPoints> covisibilityNodes = vtkSmartPointer<vtkPoints>::New();
+
+        // Fill-up with nodes
+        for(unsigned i = 0; i <  nodes->size(); i++){
+            covisibilityNodes->InsertNextPoint(     nodes->points[i].x, 
+                                                    nodes->points[i].y, 
+                                                    nodes->points[i].z);
+            if(i > 0){
+                vtkIdType connectivity[2];
+                connectivity[0] = nodesInfo[i].id_;
+                connectivity[1] = nodesInfo[i].parent_;
+                treeBase->InsertNextCell(VTK_LINE,2,connectivity);
+            }
+        }
+
+        treeBase->SetPoints(covisibilityNodes);
+        _viewer->addModelFromPolyData(treeBase, "treeRRT");
+    });
 
     // Draw result.
     viz.draw(traj);
+    auto t4 = std::chrono::system_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()/1000.0 << "s." << std::endl;
+    
     for(;;){
         viz.rawViewer()->spinOnce(30);
         std::this_thread::sleep_for(std::chrono::milliseconds(30));

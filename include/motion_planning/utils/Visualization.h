@@ -46,6 +46,9 @@ namespace mp{
         /// Draw polygon mesh 
         void drawSphere(const Eigen::Vector3f &_center, float _radius);
 
+        /// Use functor to draw
+        void drawCustom(std::function<void(std::shared_ptr<pcl::visualization::PCLVisualizer> &_viewer)> _func);
+
         /// block visualizer to render
         void spin();
 

@@ -80,6 +80,11 @@ namespace mp{
     } 
 
     //-------------------------------------------------------------------------------------------------------------
+    void Visualizer::drawCustom(std::function<void(std::shared_ptr<pcl::visualization::PCLVisualizer> &_viewer)> _func){
+        _func(viewer_);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------
     void Visualizer::spin(){
         viewer_->spin();
     }
