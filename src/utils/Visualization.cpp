@@ -72,6 +72,14 @@ namespace mp{
     }
 
     //-------------------------------------------------------------------------------------------------------------
+    void Visualizer::drawSphere(const Eigen::Vector3f &_center, float _radius){
+        std::string itemName = "sphere_"+std::to_string(itemCounter_);
+        viewer_->addSphere(pcl::PointXYZ(_center[0], _center[1], _center[2]), _radius, itemName);
+
+        itemCounter_++;
+    } 
+
+    //-------------------------------------------------------------------------------------------------------------
     void Visualizer::spin(){
         viewer_->spin();
     }

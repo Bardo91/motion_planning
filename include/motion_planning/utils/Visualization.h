@@ -43,6 +43,9 @@ namespace mp{
         /// Draw polygon mesh 
         void draw(const pcl::PolygonMesh &_mesh, const Eigen::Matrix4f &_pose);
 
+        /// Draw polygon mesh 
+        void drawSphere(const Eigen::Vector3f &_center, float _radius);
+
         /// block visualizer to render
         void spin();
 

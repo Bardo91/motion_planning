@@ -43,14 +43,23 @@ int main(int _argc, char** _argv){
 
     mp::RRTStar planner;
 
-    planner.initPoint({0,0,0});
+    planner.initPoint({-0.5,-0.5,-0.5});
     planner.targetPoint({1,1,1});
 
     planner.enableDebugVisualization(viz.rawViewer());
     planner.iterations(2000);
     // planner.dimensions(-5,-5,-5,5,5,5);
+    
+    Eigen::Vector3f sphereCentre = {0.3,0.3,0.3};
+    float radSphere = 0.5;
+    mp::Constraint c1 = [&](const Eigen::Vector3f & _old, const Eigen::Vector3f &_new){
+        return pow(_new[0] - sphereCentre[0], 2) + pow(_new[1] - sphereCentre[1], 2) + pow(_new[2] - sphereCentre[2], 2) - pow(radSphere,2) > 0;
+    };
+    planner.addConstraint(c1);
+
     auto traj = planner.compute();
 
+    viz.drawSphere(sphereCentre, radSphere);
     viz.draw(traj);
 
     for(;;){
