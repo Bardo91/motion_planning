@@ -76,7 +76,7 @@ endif()
 
 # Collect all sources
 file(GLOB_RECURSE RGDBTOOLS_SOURCE_FILES "src/*.cpp" "src/*.c")
-file(GLOB_RECURSE RGDBTOOLS_HEADER_FILES "include/*.h" "include/*.inl")
+file(GLOB_RECURSE RGDBTOOLS_HEADER_FILES "include/*.h" "include/*.inl" "include/*.hpp")
  
 add_library(${PROJECT_NAME} SHARED ${RGDBTOOLS_HEADER_FILES} ${RGDBTOOLS_SOURCE_FILES})
 
@@ -147,6 +147,7 @@ write_basic_package_version_file(
 # This installs the include folder
 install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX} FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX} FILES_MATCHING PATTERN "*.inl")
+install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX} FILES_MATCHING PATTERN "*.hpp")
 
 export(TARGETS motion_planning NAMESPACE motion_planning:: FILE motion_planningTargets.cmake)
 
