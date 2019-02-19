@@ -33,6 +33,13 @@ namespace mp{
                         maxLimit_({1,1,1}),
                         nodes_(new pcl::PointCloud<pcl::PointXYZ>) {
         // srand((unsigned int) time(0));
+        samplerFn_ = [&](){
+            Eigen::Vector3f sampledPoint = Eigen::Vector3f::Random();
+            sampledPoint[0] = ((sampledPoint[0] - (-1))/2) * (maxLimit_[0] - minLimit_[0]) + minLimit_[0];
+            sampledPoint[1] = ((sampledPoint[1] - (-1))/2) * (maxLimit_[1] - minLimit_[1]) + minLimit_[1];
+            sampledPoint[2] = ((sampledPoint[2] - (-1))/2) * (maxLimit_[2] - minLimit_[2]) + minLimit_[2];
+            return sampledPoint;
+        };
     }
 
     //-----------------------------------------------------------------------------------------------------------------
@@ -173,6 +180,11 @@ namespace mp{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    void RRTStar::samplerFunction(std::function<Eigen::Vector3f(void)> _samplerFn){
+        samplerFn_ = _samplerFn;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     void RRTStar::tree(pcl::PointCloud<pcl::PointXYZ>::Ptr &_nodes, std::vector<NodeInfo>& _nodesInfo){
         _nodes = nodes_;
         _nodesInfo = nodesInfo_;
@@ -180,11 +192,7 @@ namespace mp{
 
     //-----------------------------------------------------------------------------------------------------------------
     Eigen::Vector3f RRTStar::sampleFree(){
-        Eigen::Vector3f sampledPoint = Eigen::Vector3f::Random();
-        sampledPoint[0] = ((sampledPoint[0] - (-1))/2) * (maxLimit_[0] - minLimit_[0]) + minLimit_[0];
-        sampledPoint[1] = ((sampledPoint[1] - (-1))/2) * (maxLimit_[1] - minLimit_[1]) + minLimit_[1];
-        sampledPoint[2] = ((sampledPoint[2] - (-1))/2) * (maxLimit_[2] - minLimit_[2]) + minLimit_[2];
-        return sampledPoint;
+        return samplerFn_();
     }
 
     //-----------------------------------------------------------------------------------------------------------------

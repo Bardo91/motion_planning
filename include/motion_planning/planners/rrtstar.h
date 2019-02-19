@@ -64,6 +64,9 @@ namespace mp{
         /// Set dimensios for the sampler
         void dimensions(float _xmin, float _ymin, float _zmin, float _xmax, float _ymax, float _zmax);
 
+        /// Set sampling function, if not given random uniform by default using limits
+        void samplerFunction(std::function<Eigen::Vector3f(void)> _samplerFn);
+
         /// Get tree info
         void tree(pcl::PointCloud<pcl::PointXYZ>::Ptr &_nodes, std::vector<NodeInfo>& _nodesInfo);
 
@@ -81,6 +84,8 @@ namespace mp{
         int iterations_ = 100;
         float stepSize_ = 0.5;
         float neighborSearchDistance_ = 0.15;
+
+        std::function<Eigen::Vector3f(void)> samplerFn_;
 
         std::vector<NodeInfo> nodesInfo_;
         pcl::PointCloud<pcl::PointXYZ>::Ptr nodes_;
