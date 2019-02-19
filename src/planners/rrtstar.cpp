@@ -196,8 +196,13 @@ namespace mp{
     //-----------------------------------------------------------------------------------------------------------------
     Eigen::Vector3f RRTStar::steer(const Eigen::Vector3f &_newPoint, const Eigen::Vector3f &_nearestPoint){
         Eigen::Vector3f dir = _newPoint - _nearestPoint;
-        dir /= dir.norm();
-        return _nearestPoint + dir*stepSize_;
+        auto norm = dir.norm();
+        if(norm < stepSize_){
+            return _newPoint;
+        }else{
+            dir /= norm;
+            return _nearestPoint + dir*stepSize_;
+        }
     }
 
     //-----------------------------------------------------------------------------------------------------------------

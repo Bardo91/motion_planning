@@ -25,7 +25,6 @@
 #include <Eigen/Eigen>
 #include <vector>
 
-
 namespace mp{
     /// Class that represents the resulting trajectory of a planner
     class Trajectory{

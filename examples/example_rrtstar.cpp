@@ -31,6 +31,7 @@
 #include <thread>
 #include <chrono>
 
+
 int main(int _argc, char** _argv){    
     std::cout << "Loading input cloud: ";
     auto t0 = std::chrono::system_clock::now();
@@ -87,7 +88,7 @@ int main(int _argc, char** _argv){
     Eigen::Vector3f sphereCentre = {    (minPt.x + maxPt.x)/2 ,
                                         (minPt.y + maxPt.y)/2 ,
                                         /*(minPt.z + maxPt.z)/2*/ 2.0 };
-    float radSphere = 10;
+    float radSphere = 20;
     mp::Constraint c2 = [&](const Eigen::Vector3f & _old, const Eigen::Vector3f &_new){
         return pow(_new[0] - sphereCentre[0], 2) + pow(_new[1] - sphereCentre[1], 2) + pow(_new[2] - sphereCentre[2], 2) - pow(radSphere,2) > 0;
     };
@@ -130,7 +131,7 @@ int main(int _argc, char** _argv){
     });
 
     // Draw result.
-    viz.draw(traj);
+    viz.draw(traj, true);
     auto t4 = std::chrono::system_clock::now();
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t4-t3).count()/1000.0 << "s." << std::endl;
     

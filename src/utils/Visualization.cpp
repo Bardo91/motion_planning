@@ -21,6 +21,8 @@
 
 #include <motion_planning/utils/Visualization.h>
 
+#include <motion_planning/utils/splines.hpp>
+
 namespace mp{
     //-------------------------------------------------------------------------------------------------------------
     Visualizer::Visualizer(){
@@ -29,7 +31,7 @@ namespace mp{
     }
 
     //-------------------------------------------------------------------------------------------------------------
-    void Visualizer::draw(const Trajectory &_trajectory){
+    void Visualizer::draw(const Trajectory &_trajectory, bool _useSpline){
         // Create new graph
         vtkSmartPointer<vtkPolyData> covisibilityGraph = vtkSmartPointer<vtkPolyData>::New();
         covisibilityGraph->Allocate();
@@ -43,20 +45,40 @@ namespace mp{
 
         // Fill-up with nodes
         auto points = _trajectory.points();
-        for(unsigned i = 0; i <  points.size(); i++){
-            const unsigned char green[3] = {0, 255, 0};
-            covisibilityNodes->InsertNextPoint(    points[i][0], 
-                                                    points[i][1], 
-                                                    points[i][2]);
-            covisibilityNodeColors->InsertNextTupleValue(green);
-            if(i > 0){
-                vtkIdType connectivity[2];
-                connectivity[0] = i-1;
-                connectivity[1] = i;
-                covisibilityGraph->InsertNextCell(VTK_LINE,2,connectivity);
+        
+        if(_useSpline){
+            Spline<Eigen::Vector3f, float> spl(5);
+            spl.set_ctrl_points(points);
+            int nPoints = points.size()*10;
+            for(unsigned i = 0; i < nPoints; i++){
+                auto p = spl.eval_f(1.0 / nPoints* i );
+                const unsigned char green[3] = {0, 255, 0};
+                covisibilityNodes->InsertNextPoint(     p[0], 
+                                                        p[1], 
+                                                        p[2]);
+                covisibilityNodeColors->InsertNextTupleValue(green);
+                if(i > 0){
+                    vtkIdType connectivity[2];
+                    connectivity[0] = i-1;
+                    connectivity[1] = i;
+                    covisibilityGraph->InsertNextCell(VTK_LINE,2,connectivity);
+                }
             }
+        }else{
+            for(unsigned i = 0; i <  points.size(); i++){
+                const unsigned char green[3] = {0, 255, 0};
+                covisibilityNodes->InsertNextPoint(    points[i][0], 
+                                                        points[i][1], 
+                                                        points[i][2]);
+                covisibilityNodeColors->InsertNextTupleValue(green);
+                if(i > 0){
+                    vtkIdType connectivity[2];
+                    connectivity[0] = i-1;
+                    connectivity[1] = i;
+                    covisibilityGraph->InsertNextCell(VTK_LINE,2,connectivity);
+                }
+            }            
         }
-
         covisibilityGraph->SetPoints(covisibilityNodes);
         covisibilityGraph->GetPointData()->SetScalars(covisibilityNodeColors);
         viewer_->addModelFromPolyData(covisibilityGraph, "covisibility_graph_"+std::to_string(itemCounter_));

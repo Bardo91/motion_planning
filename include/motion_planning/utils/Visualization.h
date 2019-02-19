@@ -34,7 +34,7 @@ namespace mp{
         Visualizer();
 
         /// Draw a trajectory
-        void draw(const Trajectory &_trajectory);
+        void draw(const Trajectory &_trajectory, bool _useSpline = false);
 
         /// Draw point cloud 
         template<typename PointType_>
