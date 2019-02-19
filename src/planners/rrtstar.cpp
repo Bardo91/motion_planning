@@ -106,8 +106,11 @@ namespace mp{
                     auto cnew = costFromOrigin(newId) + (neighbor- newPoint).norm();
                     auto cnear = costFromOrigin(xId);
                     if(cnew < cnear && checkConstraints(neighbor, newPoint)){
-                        viewer_->removeShape("line_"+std::to_string(newId)+std::to_string(xminId));
-                        viewer_->addLine(nodes_->points[newId], nodes_->points[xId], "line_"+std::to_string(newId)+std::to_string(xminId));
+
+                        if(viewer_){
+                            viewer_->removeShape("line_"+std::to_string(newId)+std::to_string(xminId));
+                            viewer_->addLine(nodes_->points[newId], nodes_->points[xId], "line_"+std::to_string(newId)+std::to_string(xminId));
+                        }
                         nodesInfo_[newId].parent_ = xId;
                     }
                 }
