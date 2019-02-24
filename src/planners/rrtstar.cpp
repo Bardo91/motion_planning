@@ -82,6 +82,7 @@ namespace mp{
                                                     nodes_->points[xId].y, 
                                                     nodes_->points[xId].z);
                     auto c = costFromOrigin(xId) + (neighbor- newPoint).norm();
+                    // std::cout << newPoint.transpose() << " | " << neighbor.transpose() << " | " << costFromOrigin(xId) << " | " << (neighbor- newPoint).norm() << std::endl;
                     if(c < cmin && checkConstraints(neighbor, newPoint)){
                         xminId = xId;
                         cmin = c;
@@ -90,6 +91,7 @@ namespace mp{
 
                 // Add edge info
                 nodesInfo_[newId].parent_ = xminId;
+                nodesInfo_[newId].cost_ = cmin;
 
                 if(viewer_){
                     viewer_->addLine(nodes_->points[newId], nodes_->points[xminId], "line_"+std::to_string(newId)+std::to_string(xminId));
@@ -104,7 +106,7 @@ namespace mp{
 
                 // Rewiring
                 for(auto &xId:neighbors){
-                    if(xId == newId || xId == xminId)
+                    if(xId == newId)
                         continue;
                         
                     auto neighbor = Eigen::Vector3f(nodes_->points[xId].x, 
@@ -113,18 +115,18 @@ namespace mp{
                     auto cnew = costFromOrigin(newId) + (neighbor- newPoint).norm();
                     auto cnear = costFromOrigin(xId);
                     if(cnew < cnear && checkConstraints(neighbor, newPoint)){
-
                         if(viewer_){
                             viewer_->removeShape("line_"+std::to_string(newId)+std::to_string(xminId));
                             viewer_->addLine(nodes_->points[newId], nodes_->points[xId], "line_"+std::to_string(newId)+std::to_string(xminId));
                         }
-                        nodesInfo_[newId].parent_ = xId;
+                        nodesInfo_[xId].parent_ = newId;
                     }
                 }
 
                 if(viewer_){
                     viewer_->spinOnce();
                 }
+                // std::cout << "----------------" << std::endl;
             }
         }
         
@@ -153,12 +155,8 @@ namespace mp{
     //-----------------------------------------------------------------------------------------------------------------
     void RRTStar::stepSize(float _step){
         stepSize_ = _step;
+        neighborSearchDistance_ = _step*1.1;
         octree_.setResolution(stepSize_);
-    }
-
-    //-----------------------------------------------------------------------------------------------------------------
-    void RRTStar::neighborhoodSize(float _nSize){
-        neighborSearchDistance_ = _nSize;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
@@ -258,11 +256,11 @@ namespace mp{
         float totalCost = 0.0f;
 
         int id = _vertexId;
-        do{
+        while(id > 0){
             totalCost += pcl::geometry::distance(   nodes_->points[id], 
                                                     nodes_->points[nodesInfo_[id].parent_]);
             id = nodesInfo_[id].parent_;
-        }while(id != -1);
+        }
 
         return totalCost;
     }

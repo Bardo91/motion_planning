@@ -55,9 +55,6 @@ namespace mp{
         /// Set maximum step size for the tree
         void stepSize(float _step);
 
-        /// Set radious search size for rewiring
-        void neighborhoodSize(float _nSize);
-
         /// Interface for enabling visualization of the algorithm while working. 
         virtual void enableDebugVisualization(std::shared_ptr<pcl::visualization::PCLVisualizer> _viewer);
 
