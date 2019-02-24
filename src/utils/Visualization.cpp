@@ -81,7 +81,10 @@ namespace mp{
         }
         covisibilityGraph->SetPoints(covisibilityNodes);
         covisibilityGraph->GetPointData()->SetScalars(covisibilityNodeColors);
-        viewer_->addModelFromPolyData(covisibilityGraph, "covisibility_graph_"+std::to_string(itemCounter_));
+        
+        viewer_->addModelFromPolyData(covisibilityGraph, "traj_"+std::to_string(itemCounter_));
+        viewer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "traj_"+std::to_string(itemCounter_));
+        
         itemCounter_++;
     }
 
