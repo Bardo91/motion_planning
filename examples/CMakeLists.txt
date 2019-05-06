@@ -27,6 +27,10 @@ add_executable(example_rrtstar ./example_rrtstar.cpp)
 target_include_directories(example_rrtstar PUBLIC ../include)
 target_link_libraries(example_rrtstar LINK_PUBLIC motion_planning )
 
+add_executable(example_rrtstar_simple ./example_rrtstar_simple.cpp)
+target_include_directories(example_rrtstar_simple PUBLIC ../include)
+target_link_libraries(example_rrtstar_simple LINK_PUBLIC motion_planning )
+
 add_executable(example_rewiring ./example_rewiring.cpp)
 target_include_directories(example_rewiring PUBLIC ../include)
 target_link_libraries(example_rewiring LINK_PUBLIC motion_planning )

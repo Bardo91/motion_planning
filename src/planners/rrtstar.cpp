@@ -28,7 +28,9 @@
 
 namespace mp{
     //-----------------------------------------------------------------------------------------------------------------
-    RRTStar::RRTStar(): octree_(stepSize_),  
+    RRTStar::RRTStar(float _stepSize): octree_(_stepSize),  
+                        stepSize_(_stepSize),
+                        neighborSearchDistance_(_stepSize),
                         minLimit_({-1,-1,-1}), 
                         maxLimit_({1,1,1}),
                         nodes_(new pcl::PointCloud<pcl::PointXYZ>) {

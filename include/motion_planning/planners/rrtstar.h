@@ -38,7 +38,7 @@ namespace mp{
 
     public:
         /// Basic constructor
-        RRTStar();
+        RRTStar(float _stepSize = 0.1);
 
         /// Set initial point
         virtual void initPoint(const Eigen::Vector3f &_initPoint) override;
@@ -79,8 +79,8 @@ namespace mp{
 
     private:
         int iterations_ = 100;
-        float stepSize_ = 0.5;
-        float neighborSearchDistance_ = 0.15;
+        float stepSize_ = 0.1;
+        float neighborSearchDistance_ = 0.1;
 
         std::function<Eigen::Vector3f(void)> samplerFn_;
 
