@@ -257,8 +257,9 @@ namespace mp{
 
         int id = _vertexId;
         while(id > 0){
-            totalCost += pcl::geometry::distance(   nodes_->points[id], 
-                                                    nodes_->points[nodesInfo_[id].parent_]);
+            Eigen::Vector3f p1 = {nodes_->points[id].x, nodes_->points[id].y, nodes_->points[id].z};
+            Eigen::Vector3f p2 = {nodes_->points[nodesInfo_[id].parent_].x, nodes_->points[nodesInfo_[id].parent_].y, nodes_->points[nodesInfo_[id].parent_].z};
+            totalCost += (p2-p1).norm();
             id = nodesInfo_[id].parent_;
         }
 
