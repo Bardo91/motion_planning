@@ -19,42 +19,26 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+#include <motion_planning/planners/tsp.h>
+  
+// driver program to test above function 
+int main()  { 
+    matrix representation of graph 
+    Eigen::MatrixXf graph(6,6);
+    graph << 0, 12, 29, 22, 13, 24,  
+             12, 0, 19, 3, 25, 6,  
+             29, 19, 0, 21, 23, 28,  
+             22, 3, 21, 0, 4, 5,
+             13, 25, 23, 4 ,0, 16,
+             24, 6,  28, 5, 16, 0; 
 
-#ifndef MOTIONPLANNING_PLANNER_H_
-#define MOTIONPLANNING_PLANNER_H_
-
-#include <functional>
-
-#include <motion_planning/Constraint.h>
-#include <motion_planning/Trajectory.h>
-
-#include <pcl/visualization/pcl_visualizer.h>
-
-namespace mp{
-    /// Base class with general interface of planner
-    class Planner{
-    public:
-        /// Add a new constraint inherited from contraint class
-        void addConstraint(const Constraint _constraint);
     
-        /// Set initial point
-        virtual void initPoint(const Eigen::Vector3f &_initPoint);
-        
-        /// Set target point
-        void targetPoint(const Eigen::Vector3f &_target);
+    mp::TSP tsp(graph);
 
-        /// Compute trajectory    
-        virtual Trajectory compute() = 0;
+    auto traj = tsp.compute();
 
-        /// Interface for enabling visualization of the algorithm while working. 
-        /// This method is not guaranteed to be implemented in all the classes.
-        virtual void enableDebugVisualization(std::shared_ptr<pcl::visualization::PCLVisualizer> _viewer) {} ;
+    std::cout << traj <<std::endl;
+    
 
-    protected:
-        std::vector<Constraint> constraints_;
-        Eigen::Vector3f init_;
-        Eigen::Vector3f target_;
-    };
-}
-
-#endif
+    return 0; 
+} 

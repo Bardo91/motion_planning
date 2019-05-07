@@ -34,3 +34,8 @@ target_link_libraries(example_rrtstar_simple LINK_PUBLIC motion_planning )
 add_executable(example_rewiring ./example_rewiring.cpp)
 target_include_directories(example_rewiring PUBLIC ../include)
 target_link_libraries(example_rewiring LINK_PUBLIC motion_planning )
+
+
+add_executable(example_tsp ./example_tsp.cpp)
+target_include_directories(example_tsp PUBLIC ../include)
+target_link_libraries(example_tsp LINK_PUBLIC motion_planning )

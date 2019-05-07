@@ -19,42 +19,26 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-
-#ifndef MOTIONPLANNING_PLANNER_H_
-#define MOTIONPLANNING_PLANNER_H_
-
-#include <functional>
-
-#include <motion_planning/Constraint.h>
-#include <motion_planning/Trajectory.h>
-
-#include <pcl/visualization/pcl_visualizer.h>
-
 namespace mp{
-    /// Base class with general interface of planner
-    class Planner{
-    public:
-        /// Add a new constraint inherited from contraint class
-        void addConstraint(const Constraint _constraint);
-    
-        /// Set initial point
-        virtual void initPoint(const Eigen::Vector3f &_initPoint);
-        
-        /// Set target point
-        void targetPoint(const Eigen::Vector3f &_target);
+    template<typename PointType_>
+    TSP::TSP(const pcl::PointCloud<PointType_> &_points){
+        for(auto &p:_points){
+            pcl::PointXYZ pclP(p.x, p.y, p.z);
+            points_.push_back(pclP);
+        }
 
-        /// Compute trajectory    
-        virtual Trajectory compute() = 0;
+        graphCost_ = Eigen::MatrixXf(points_.size(),points_.size());
+        nPoints_ = points_.size();
 
-        /// Interface for enabling visualization of the algorithm while working. 
-        /// This method is not guaranteed to be implemented in all the classes.
-        virtual void enableDebugVisualization(std::shared_ptr<pcl::visualization::PCLVisualizer> _viewer) {} ;
+        for(unsigned i = 0; i < points_.size(); i++){
+            for(unsigned j = i; j < points_.size(); j++){
+                float distance = sqrt(  pow(points_[i].x - points_[j].x, 2)+
+                                        pow(points_[i].y - points_[j].y, 2)+
+                                        pow(points_[i].z - points_[j].z, 2)  );
 
-    protected:
-        std::vector<Constraint> constraints_;
-        Eigen::Vector3f init_;
-        Eigen::Vector3f target_;
-    };
+                graphCost_(i, j) = distance;
+                graphCost_(j, i) = distance;    
+            }   
+        }
+    }
 }
-
-#endif

@@ -20,41 +20,35 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef MOTIONPLANNING_PLANNER_H_
-#define MOTIONPLANNING_PLANNER_H_
+#ifndef MOTIONPLANNING_PLANNERS_TSP_H_
+#define MOTIONPLANNING_PLANNERS_TSP_H_
 
-#include <functional>
-
-#include <motion_planning/Constraint.h>
-#include <motion_planning/Trajectory.h>
-
-#include <pcl/visualization/pcl_visualizer.h>
+#include <motion_planning/Planner.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 namespace mp{
-    /// Base class with general interface of planner
-    class Planner{
+    /// Naive implementation of TSP problem solver by computing all permutations
+    class TSP : public Planner{
     public:
-        /// Add a new constraint inherited from contraint class
-        void addConstraint(const Constraint _constraint);
-    
-        /// Set initial point
-        virtual void initPoint(const Eigen::Vector3f &_initPoint);
-        
-        /// Set target point
-        void targetPoint(const Eigen::Vector3f &_target);
+        /// Construct problem using directly the graph costs
+        TSP(const Eigen::MatrixXf &_graphCost);
+
+        /// Construct problem using a set of points
+        template<typename PointType_>
+        TSP(const pcl::PointCloud<PointType_> &_points);
 
         /// Compute trajectory    
-        virtual Trajectory compute() = 0;
+        virtual Trajectory compute();
 
-        /// Interface for enabling visualization of the algorithm while working. 
-        /// This method is not guaranteed to be implemented in all the classes.
-        virtual void enableDebugVisualization(std::shared_ptr<pcl::visualization::PCLVisualizer> _viewer) {} ;
-
-    protected:
-        std::vector<Constraint> constraints_;
-        Eigen::Vector3f init_;
-        Eigen::Vector3f target_;
+    private:
+        Eigen::MatrixXf graphCost_;
+        pcl::PointCloud<pcl::PointXYZ> points_;
+        int initPoint_ = 0;
+        int nPoints_ = 0;
     };
 }
+
+#include <motion_planning/planners/tsp.inl>
 
 #endif
