@@ -31,8 +31,21 @@ namespace mp{
         std::vector<Eigen::Vector3f> Trajectory::points() const{
                 return points_;
         }
+        
+        //-------------------------------------------------------------------------------------------------------------
+        float Trajectory::distance() const{
+                float distance = 0;
+                for(unsigned i = 1; i < points_.size(); i++){
+                        distance += sqrt(
+                                pow(points_[i-1][0] - points_[i][0], 2)+
+                                pow(points_[i-1][1] - points_[i][1], 2)+
+                                pow(points_[i-1][2] - points_[i][2], 2)
+                        );
+                }
+                return distance;
+        }
 
-
+        //-------------------------------------------------------------------------------------------------------------
         std::ostream& operator<<(std::ostream& os, const Trajectory& _traj) {
                 for(unsigned i = 0; i < _traj.points_.size(); i++){
                         auto p = _traj.points_[i];

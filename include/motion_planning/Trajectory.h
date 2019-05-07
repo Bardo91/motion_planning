@@ -37,6 +37,8 @@ namespace mp{
         std::vector<Eigen::Vector3f> points() const;
 
         friend std::ostream& operator<<(std::ostream& os, const Trajectory& _traj);
+
+        float distance() const;
     private:
         std::vector<Eigen::Vector3f> points_;
         
