@@ -24,6 +24,7 @@
 
 #include <Eigen/Eigen>
 #include <vector>
+#include <iostream>
 
 namespace mp{
     /// Class that represents the resulting trajectory of a planner
@@ -35,6 +36,7 @@ namespace mp{
         /// get list of points in trajectory
         std::vector<Eigen::Vector3f> points() const;
 
+        friend std::ostream& operator<<(std::ostream& os, const Trajectory& _traj);
     private:
         std::vector<Eigen::Vector3f> points_;
         

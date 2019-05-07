@@ -32,4 +32,13 @@ namespace mp{
                 return points_;
         }
 
+
+        std::ostream& operator<<(std::ostream& os, const Trajectory& _traj) {
+                for(unsigned i = 0; i < _traj.points_.size(); i++){
+                        auto p = _traj.points_[i];
+                        os << "("<<i<<")("<<p[0]<<","<<p[1]<<","<<p[2]<<")\n";
+                }
+                return os;
+        }
+
 }
