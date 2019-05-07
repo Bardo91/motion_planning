@@ -23,7 +23,7 @@
   
 // driver program to test above function 
 int main()  { 
-    matrix representation of graph 
+    //matrix representation of graph 
     Eigen::MatrixXf graph(6,6);
     graph << 0, 12, 29, 22, 13, 24,  
              12, 0, 19, 3, 25, 6,  
