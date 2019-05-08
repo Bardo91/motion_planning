@@ -42,10 +42,10 @@ namespace mp{
 
         // store minimum weight Hamiltonian Cycle. 
         std::vector<int> minConfiguration;
-        int min_path = std::numeric_limits<int>::max(); 
+        float min_path = std::numeric_limits<float>::max(); 
         do { 
             // store current Path weight(cost) 
-            int current_pathweight = 0; 
+            float current_pathweight = 0; 
                 
             // compute current path weight 
             int k = initPoint_; 
