@@ -47,7 +47,7 @@ set(motion_planning_COMPILE_OPTIONS "-Wall")
 
 #########################################
 ## Load opencv
-find_package(OpenCV 3 REQUIRED core highgui imgproc imgcodecs features2d xfeatures2d calib3d video videoio)
+find_package(OpenCV 3 REQUIRED)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
 #########################################
