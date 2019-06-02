@@ -19,55 +19,38 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifndef MOTIONPLANNING_VISUALIZATION_H_
-#define MOTIONPLANNING_VISUALIZATION_H_
+#include <motion_planning/thirdparty/DouglasPeucker.h>
+#include <motion_planning/utils/Visualization.h>
 
-#include <pcl/visualization/pcl_visualizer.h>
+int main(int _argc, char ** _argv){
+    mp::Visualizer viz;
 
-#include <motion_planning/Trajectory.h>
+    std::list<mp::p3d> line = { {0,0,0},
+                                    {1,1,2},
+                                    {2,3,2},
+                                    {0,1,1},
+                                    {2,4,3},
+                                    {4,4,4},
+                                    {5,5,5},
+                                    {9,7,9}
+                                };
+    mp::Trajectory trajUnopt, trajOpt;
+    for(auto &p: line){
+        trajUnopt.appendPoint({std::get<0>(p), std::get<1>(p), std::get<2>(p)});
+    }
 
-namespace mp{
+    viz.draw(trajUnopt, false, 1, 255, 0, 0);
 
-    class Visualizer{
-    public:
-        /// Basic constructor
-        Visualizer();
+    mp::DouglasPuecker2D<mp::p3d, mp::p3dAccessor> dp3d(line);
 
-        /// Draw a trajectory
-        void draw(const Trajectory &_trajectory, bool _useSpline = false, int _width = 3, int _r = 0, int _g = 255, int _b = 0);
+    dp3d.simplify(atof(_argv[1]));
+    std::list<mp::p3d> result = dp3d.getLine();
+    for(auto &p: result){
+        trajOpt.appendPoint({std::get<0>(p), std::get<1>(p), std::get<2>(p)});
+    }
 
-        /// Draw point cloud 
-        template<typename PointType_>
-        void draw(const pcl::PointCloud<PointType_> &_mesh, const Eigen::Matrix4f &_pose = Eigen::Matrix4f::Identity());
+    viz.draw(trajOpt, false, 1);
 
-        /// Draw polygon mesh 
-        void draw(const pcl::PolygonMesh &_mesh, const Eigen::Matrix4f &_pose);
+    viz.spin();
 
-        /// Draw polygon mesh 
-        void drawSphere(const Eigen::Vector3f &_center, float _radius);
-
-        /// Use functor to draw
-        void drawCustom(std::function<void(std::shared_ptr<pcl::visualization::PCLVisualizer> &_viewer)> _func);
-
-        /// block visualizer to render
-        void spin();
-
-        /// Non-blocking spin to visualizer for rendering
-        void spinOnce();
-
-        /// Get raw viewer. Please use it carefully
-        std::shared_ptr<pcl::visualization::PCLVisualizer>  rawViewer();
-        
-    private:
-        std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
-        int itemCounter_ = 0;
-
-        std::vector<vtkSmartPointer<vtkPolyData>> trajectories_;
-    };
 }
-
-
-#include <motion_planning/utils/Visualization.hpp>
-
-
-#endif

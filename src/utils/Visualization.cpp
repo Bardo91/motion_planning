@@ -30,8 +30,8 @@ namespace mp{
         viewer_->addCoordinateSystem(0.5);
     }
 
-    //-------------------------------------------------------------------------------------------------------------
-    void Visualizer::draw(const Trajectory &_trajectory, bool _useSpline){
+    /// Draw a trajectory
+    void Visualizer::draw(const Trajectory &_trajectory, bool _useSpline, int _width, int _r, int _g, int _b){
         // Create new graph
         vtkSmartPointer<vtkPolyData> covisibilityGraph = vtkSmartPointer<vtkPolyData>::New();
         covisibilityGraph->Allocate();
@@ -52,7 +52,7 @@ namespace mp{
             int nPoints = points.size()*10;
             for(unsigned i = 0; i < nPoints; i++){
                 auto p = spl.eval_f(1.0 / nPoints* i );
-                const unsigned char green[3] = {0, 255, 0};
+                const unsigned char green[3] = {_r, _g, _b};
                 covisibilityNodes->InsertNextPoint(     p[0], 
                                                         p[1], 
                                                         p[2]);
@@ -66,7 +66,7 @@ namespace mp{
             }
         }else{
             for(unsigned i = 0; i <  points.size(); i++){
-                const unsigned char green[3] = {0, 255, 0};
+                const unsigned char green[3] = {_r, _g, _b};
                 covisibilityNodes->InsertNextPoint(    points[i][0], 
                                                         points[i][1], 
                                                         points[i][2]);
@@ -83,7 +83,7 @@ namespace mp{
         covisibilityGraph->GetPointData()->SetScalars(covisibilityNodeColors);
         
         viewer_->addModelFromPolyData(covisibilityGraph, "traj_"+std::to_string(itemCounter_));
-        viewer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "traj_"+std::to_string(itemCounter_));
+        viewer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, _width, "traj_"+std::to_string(itemCounter_));
         
         itemCounter_++;
     }
