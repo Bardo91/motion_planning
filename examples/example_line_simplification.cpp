@@ -25,15 +25,16 @@
 int main(int _argc, char ** _argv){
     mp::Visualizer viz;
 
-    std::list<mp::p3d> line = { {0,0,0},
-                                    {1,1,2},
-                                    {2,3,2},
-                                    {0,1,1},
-                                    {2,4,3},
-                                    {4,4,4},
-                                    {5,5,5},
-                                    {9,7,9}
-                                };
+    std::list<mp::p3d> line;
+	line.push_back(mp::p3d{0,0,0});
+	line.push_back(mp::p3d{1,1,2});
+	line.push_back(mp::p3d{2,3,2});
+	line.push_back(mp::p3d{0,1,1});
+	line.push_back(mp::p3d{2,4,3});
+	line.push_back(mp::p3d{4,4,4});
+	line.push_back(mp::p3d{5,5,5});
+	line.push_back(mp::p3d{9,7,9});
+                          
     mp::Trajectory trajUnopt, trajOpt;
     for(auto &p: line){
         trajUnopt.appendPoint({std::get<0>(p), std::get<1>(p), std::get<2>(p)});

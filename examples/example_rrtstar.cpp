@@ -140,7 +140,7 @@ int main(int _argc, char** _argv){
 
     std::list<mp::p3d> trajUnopt; 
     for(auto &p: traj.points()){
-        trajUnopt.push_back({p[0], p[1], p[2]});
+        trajUnopt.push_back(mp::p3d{p[0], p[1], p[2]});
     }
     mp::DouglasPuecker2D<mp::p3d, mp::p3dAccessor> dp3d(trajUnopt);
     dp3d.simplify(atof(_argv[4]));
