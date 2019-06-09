@@ -62,6 +62,9 @@ namespace mp{
         for(unsigned iter = 0; iter < iterations_ ; iter++){
             auto newPoint = sampleFree();
             auto nearestPointId = nearest(newPoint);
+            if(nearestPointId == -1)
+                continue;
+                
             auto nearestPoint = Eigen::Vector3f(nodes_->points[nearestPointId].x, 
                                                 nodes_->points[nearestPointId].y, 
                                                 nodes_->points[nearestPointId].z);
@@ -200,8 +203,11 @@ namespace mp{
         pcl::PointXYZ query(_point[0], _point[1], _point[2]);
         std::vector<int> index;
         std::vector< float > dist;
-        octree_.nearestKSearch(query, 1, index, dist);
-        return index[0];
+        int nPoints = octree_.nearestKSearch(query, 1, index, dist); 
+        if( nPoints > 0 )
+            return index[0];
+        else
+            return -1;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
