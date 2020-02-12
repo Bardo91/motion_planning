@@ -58,6 +58,9 @@ namespace mp{
         /// Get raw viewer. Please use it carefully
         std::shared_ptr<pcl::visualization::PCLVisualizer>  rawViewer();
         
+        /// Attach point click event
+        void attachPointClickEvent(std::function< void(const pcl::visualization::PointPickingEvent &)> _cb);
+
     private:
         std::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
         int itemCounter_ = 0;

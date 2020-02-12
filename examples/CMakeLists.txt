@@ -43,3 +43,8 @@ target_link_libraries(example_tsp LINK_PUBLIC motion_planning )
 add_executable(example_line_simply ./example_line_simplification.cpp)
 target_include_directories(example_line_simply PUBLIC ../include)
 target_link_libraries(example_line_simply LINK_PUBLIC motion_planning )
+
+
+add_executable(example_click ./example_click.cpp)
+target_include_directories(example_click PUBLIC ../include)
+target_link_libraries(example_click LINK_PUBLIC motion_planning )

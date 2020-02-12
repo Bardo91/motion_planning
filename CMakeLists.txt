@@ -46,11 +46,6 @@ set(motion_planning_COMPILE_OPTIONS "-Wall")
 
 
 #########################################
-## Load opencv
-find_package(OpenCV 3 REQUIRED)
-set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
-
-#########################################
 ## Load PCL
 find_package(PCL QUIET REQUIRED)
 if(${PCL_FOUND})
@@ -88,9 +83,6 @@ target_compile_options(${PROJECT_NAME} PUBLIC ${motion_planning_COMPILE_OPTIONS_
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenCV_LIBS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PCL_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${PCL_LIBRARIES})

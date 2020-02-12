@@ -2,7 +2,6 @@ get_filename_component(motion_planning_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PA
 include(CMakeFindDependencyMacro)
 
 find_dependency(PCL QUIET REQUIRED)
-find_package(OpenCV 3 REQUIRED)
 
 if(NOT TARGET motion_planning::motion_planning)
     include("${motion_planning_CMAKE_DIR}/motion_planningTargets.cmake")

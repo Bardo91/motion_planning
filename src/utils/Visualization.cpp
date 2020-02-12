@@ -123,5 +123,10 @@ namespace mp{
     std::shared_ptr<pcl::visualization::PCLVisualizer>  Visualizer::rawViewer(){
         return viewer_;
     }
+
+    //-------------------------------------------------------------------------------------------------------------
+    void Visualizer::attachPointClickEvent(std::function< void(const pcl::visualization::PointPickingEvent &)> _cb){
+        viewer_->registerPointPickingCallback(_cb);
+    }
         
 }
